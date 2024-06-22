@@ -44,58 +44,29 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: prometheus-operator-kube-p-prometheus
+  name: prometheus-service
   labels:
     app: prometheus
 spec:
   ports:
-  - port: 9090
-    targetPort: 9090
-    protocol: TCP
-    name: http
+    - port: 9090
+      targetPort: 9090
   selector:
     app.kubernetes.io/name: prometheus
-  type: ClusterIP
+  type: LoadBalancer
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
-  name: prometheus-operator-grafana
+  name: grafana-service
   labels:
     app: grafana
 spec:
   ports:
-  - port: 80
-    targetPort: 3000
-    protocol: TCP
-    name: http
+    - port: 80
+      targetPort: 3000
   selector:
     app.kubernetes.io/name: grafana
-  type: ClusterIP
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: monitoring-ingress
-  namespace: default
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-    - host: ab3ee6d797cdf4c7386cedb215818b61-539605744.us-west-2.elb.amazonaws.com
-      http:
-        paths:
-          - path: /prometheus
-            pathType: Prefix
-            backend:
-              service:
-                name: prometheus-operator-kube-p-prometheus
-                port:
-                  number: 9090
-          - path: /grafana
-            pathType: Prefix
-            backend:
-              service:
-                name: prometheus-operator-grafana
-                port:
-                  number: 80
+  type: LoadBalancer
